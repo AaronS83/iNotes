@@ -1,0 +1,90 @@
+each of the folders, backend and frontend have different package.json and node modules that are different from each other.
+
+concurrently - npm i react-router-dom concurrently -> can run more than one server concurrently at one time
+
+https://www.youtube.com/watch?v=hfjQLssL0hs&list=PLu0W_9lII9agx66oZnT6IyhcMIbUMNMdt&index=56
+
+this video tells how to run both by changing the package.json
+"scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "both": "concurrently \"npm run start\" \"nodemon backend/index.js\""
+  }
+done so that 
+npm i react-router-dom concurrently -> can run more than one server concurrently at one time in one terminal
+
+_________________________________________________________________________________________________________________________
+contextApi
+Used a lot in complex applications
+https://www.youtube.com/watch?v=3u9GZQN7ZUQ&list=PLu0W_9lII9agx66oZnT6IyhcMIbUMNMdt&index=57
+
+This can be used to track the change of states across many different components.
+
+Can be done by making a state in app.js, but that issue is that you have to do prop drilling.
+Send props from component to component
+
+To avoid that, we use contextApi
+Make a context, independent from the app.
+using create context we can create context.
+Uses useContext hook to change the context.
+Any changes reflects across all components.
+We can create more than one (auth) context.
+
+_________________________________________________________________________________________________________________________
+Making context is the same
+
+NoteState.js
+// create state that are need in note context
+import { react } from "react";
+
+import NoteContext from "./NoteContext";
+
+const NoteState = (props)=>{
+    const state = {
+      // the values you eant to share or send around is defined here and is included in value={}
+    }
+    return (
+      //Whenever you wrap things between NoteContext, between that all childern will come 
+        <NoteContext.provider value={state}>
+            {props.children}
+        </NoteContext.provider>
+    )
+}
+
+export default NoteState;
+
+NoteContext.js
+// Used to tell react that we want to use contextApi
+import { createContext } from "react";
+
+NoteContext = createContext(); // created a context (Stores all states related to notes that can be used by any component)
+
+export default NoteContext;
+
+above things are always written
+
+Wrap the entire application in NoteState so that they can use the states that we just defined.
+
+_________________________________________________________________________________________________________________________
+  const location = useLocation();
+  useEffect(() => {
+    // Google Analytics
+  }, [location]);
+
+  using location.pathname we can see which path we are in(localhost:3000/api/auth) we can see if we are in /api/auth
+
+  _________________________________________________________________________________________________________________________
+
+  This is the onchange fucntion for the input tag in the addnote.js:
+
+  const [note, setNote] = useState({title:"", description:"", tag:""})
+  const onChange = (e)=>{
+    setNote({...note, [e.target.name]: e.target.value})
+}
+
+// ...note, tells that keep the values of note as it is
+// [e.target.name]: e.target.value , this is telling that overwrite, or add the value of the properties inside these.
+// the name of the label eg. in the <input> tag, if name is description and we type in that, then that value will change and the others remain the same
+

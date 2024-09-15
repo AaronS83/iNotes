@@ -1,70 +1,65 @@
-# Getting Started with Create React App
+# iNotes - A Secure Personal Notes App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+iNotes is a secure and private notes management application built using the MERN stack (MongoDB, Express, React, and Node.js). 
+Users can create an account, log in, and store personal notes that are accessible only to them.
 
-## Available Scripts
+Features
 
-In the project directory, you can run:
+  User Authentication: Secure login and account creation using encrypted passwords.
+  Private Notes: Each user's notes are private and cannot be accessed by others.
+  Local Storage: User data and notes are stored locally using MongoDB Compass.
+  Responsive UI: Clean and responsive user interface built using React.
+  
+Technologies Used
 
-### `npm start`
+  MongoDB: For storing user accounts and notes data locally.
+  Express.js: Backend framework for building the server and handling API requests.
+  React.js: Frontend framework for building the user interface.
+  Node.js: Backend runtime environment for running the server.
+  
+# Installation
+**Clone the repository:**
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+  git clone https://github.com/AaronS83/iNotes.git
+  
+**Navigate to the project directory:**
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+cd iNotes
 
-### `npm test`
+**Install dependencies for the server:**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+cd backend
+npm install
 
-### `npm run build`
+**Install dependencies for the client:**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+cd ../frontend
+npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Setup MongoDB:**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Ensure MongoDB is installed locally on your machine.
+Start MongoDB locally using MongoDB Compass.
 
-### `npm run eject`
+**Run the server and client:**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+In two separate terminal windows:
+Run the backend server:
+cd backend
+npm start
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Run the frontend:**
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+cd frontend
+npm start
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Usage**
 
-## Learn More
+Open the browser and navigate to http://localhost:3000.
+Register for a new account or log in with an existing account.
+Write and save notes securely. Your notes are private and will be stored on MongoDB.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Security
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Passwords are hashed using bcrypt for secure storage.
+User sessions are managed using JWT (JSON Web Tokens) to keep the user logged in securely.

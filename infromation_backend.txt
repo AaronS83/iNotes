@@ -1,0 +1,433 @@
+Normally we seperate the backend and frontend repo
+
+go to the backend and run
+npm init (and fill in the details.)
+npm i express
+npm i mongoose (it is like an abstract layer above the mongoDB, and makes it easy to use mondoDB )
+
+When we used npm init, we said what the entry point is, create a file on that (here it is index.js)
+ThunderClient is used to test the api endpoints and all the dependencies
+
+go to gitIgnore and in it there is a /module, then that means that we push the node modules into git also
+remove the / if you do not want the node modules to be pushed into the file.
+
+Go to mongoDB Compass and connect onto remote database.
+can put ssl as false.
+From here we can get a connection string from here and use it as a variable
+Pasting this in mongoose, we can connect to the mondoDB
+
+We went to the backend and created a db.js file
+That is used to connect to the db, it is better to seperate the concerns.
+
+In db.js
+const mongoose = require('mongoose')
+const URI = "" // The string from the compass
+
+create a function to connect to the db.
+we can call this function in index.js to initiate a connection.
+
+Mongoose also works with promises therefore we can use async await.
+i guess the js waits at that location untill the promises are resolved.
+
+module.exports = connectToMongo.
+
+
+In index.js
+const connectToMongo = require('./db')
+connectToMongo()
+
+then do npm i -D nodemon
+
+Go to express website and copy paste the connection syntax
+
+We can test the working of the api by using ThunderClient.
+http://localhost:3000
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.get('/signup', (req, res) => {
+  res.send('Hello sign')
+})
+
+when we go to 
+http://localhost:3000
+we get Hello World
+
+when we go to 
+http://localhost:3000/signup
+we get Hello sign
+
+We need a good file structure
+make a folder for mongoose models and one for routes
+it is better and  more maintainence
+
+inside the models, we keep mongoose models
+https://www.youtube.com/watch?v=HpszyPglBtQ&list=PLu0W_9lII9agx66oZnT6IyhcMIbUMNMdt&index=44
+{
+    mongo -> create a db -> create a collection -> which contains documents, documents here are json basically
+
+    inside a db we can have multiple collection and store different info inside each of them
+}
+
+mongo db is a document collection, we can store whatever we want inside , there is no fixed rule to follow
+
+mongoose helps in the fact that it will manage the db (below is one way to create a mongoose app)
+// const mongoose = require('mongoose');
+// mongoose.connect('mongodb://127.0.0.1:27017/test');
+
+const Cat = mongoose.model('Cat', { name: String });
+
+const kitty = new Cat({ name: 'Zildjian' });
+kitty.save().then(() => console.log('meow'));
+
+The mongoose model does not need to connect as we have already establised a conection to the db via the db.
+
+To create a schema for users, we go to the documentation of the mongoose app , go to schema, and then copy paste the schema
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+
+const blogSchema = new Schema({
+  title: String, // String is shorthand for {type: String}
+  author: String,
+  body: String,
+  comments: [{ body: String, date: Date }],
+  date: { type: Date, default: Date.now },
+  hidden: Boolean,
+  meta: {
+    votes: Number,
+    favs: Number
+  }
+});
+
+We can remove the contents inside the schema and change the name to the user schema or any schema that you want
+
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+
+const UserSchema = new Schema({
+//   name: String
+    name:{
+        type: String,
+        required: true
+    },
+    email:{
+        type: String,
+        required: true,
+        unique: true // If we are using username, put unique true as a function for the username
+    },
+    password: {
+        type: String, 
+        required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now // This is a function, do not write the function call because it will be called when this model is called ig
+    }, 
+});
+
+module.exports = mongoose.model('user', UserSchema); // create a model of this schema and name the model (here is user) and then requires the schema that we are exporting 
+
+To use this schema, we are used inside routes.
+
+We can use these routes using app.use('pathNextToUri', require('./routes/auth/locationAndFile')) inside index.js
+
+eg.
+// Availible routes
+app.use('/api/auth', require('./routes/auth'))
+app.use('/api/notes', require('./routes/notes'))
+
+it is better to creaete a new file for the routes, it is easy to see than have all in one file
+
+auth.js (we use routers inside this )
+
+const express = require("express")
+const router = express.Router(); //router is inside express
+
+router.get('/', (req, res)=>{ // we use router.get and not app.get because it is for that particular route
+    obj = {
+        a:'number',
+        number: 34
+    }
+    res.json(obj)
+})
+
+module.exports = router
+
+
+if the user writes in the url
+localhost:3000/api/route, we get what is inside this, 
+eg above, in the router.get, the first argument is / which tells us the path (here since it is auth.js, the path is localhost:3000/api/auth)
+the second arg is the callback function that will be run and will have req and res and the response will be a json of an obj
+and then export the router
+
+when we go to http://localhost:3000/api/auth, we get 
+{
+  "a": "number",
+  "number": 34
+}
+
+therefore all auth related endpoints and shit will be written inside the auth.js
+
+schema is the same schema as present in sql;
+
+___________________________________________________________________________________________________________________________________________________
+How to send something in request.body
+
+if we want to use req.body, we need to call/include a middleware
+app.use(express.json());
+
+with this now we can send json and infor to the front end like app
+// Create a User using POST "api/auth/"
+This tells that we just need to send a post request to the above path and send data 
+this doesnt require auth
+
+SyntaxError: Cannot use import statement outside a module
+we need to import these for auth.js
+
+const mongoose = require("mongoose")
+const express = require("express");
+const { Schema } = mongoose;
+const router = express.Router();
+const User = require("../models/User");
+
+// Create a User using POST "api/auth/" 
+// doesnt require auth
+router.post('/', (req, res)=>{
+    console.log(req.body);
+    const user = User(req.body)
+    user.save()
+    res.send("Hello world")
+})
+
+module.exports = router
+
+// In the above code, we are sending a post request from ThunderClient with proper body (email,name, date and all shit).
+{
+  "name": "aaaf",
+  "email": "adafw@gmail.com",
+  "password": "123423"
+}
+
+This is compared to the user schema (i think) and then is stored in the database
+but the issue is that any error will show error on the console.
+Therefore we need to validate the data sent by the user 
+done via the expressValidator package.
+
+It is better to use post than get because the data that is sent is through the url so anyone can see the password when it is inside the log
+
+___________________________________________________________________________________________________________________________________________________
+
+https://www.digitalocean.com/community/tutorials/how-to-handle-form-inputs-efficiently-with-express-validator-in-express-js
+
+for express-validator
+
+router.post('/', [
+    body("name","Enter a valid name").notEmpty(),
+    body("email","Enter a valid email").isEmail(),
+    body("password").notEmpty().isLength({min:5})
+] ,(req, res)=>{
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+    res.send("Hello world")
+})
+
+we can add a message after name, such that if error is there the message will send what you entered
+
+// We do not need to create index coz mongo compass now does it for us.
+___________________________________________________________________________________________________________________________________________________
+
+collection  is a collection of endpoints you are creating with which the app is related to
+can save an endpoint for eaasy testing
+
+___________________________________________________________________________________________________________________________________________________
+
+we save our password by hashing it
+Problem: If user keeps a common password, hackers have a table of all common password and their hash (provided we are using a common hashing alg), using the hash they just need to check the table for any person that has kept a common password.
+If they find, they can easily access you app
+
+But the db admin can use salt and pepper to help prevent this :
+eg.
+
+username: aaaron
+password: password
+
+hash of password: edfs12halas
+
+but the admin keeps a salt in the db: 1j2fwqd21
+
+therefore, before hashing the password entered by the user, we add the salt
+therefore the new password is "password1j2fwqd21" now this is hashed
+Now password1j2fwqd21 is not a common password.
+
+therefore salt adds more security even for common password.
+this is done using the expressjs package bcryptjs
+
+pepper is stored in the backend.
+salt is stored in the db.
+
+___________________________________________________________________________________________________________________________________________________ 
+
+//bcrypt generates and stores the salt in the back end.
+const salt = bcrypt.genSalt(10);
+
+secPass=bcrypt.hash(req.body.password,salt) ;
+
+NEVER DIRCTLY MAP TO bcrypt
+___________________________________________________________________________________________________________________________________________________
+
+when a person logs into the website, we provide him with a token
+many types of tokens exist.
+session token
+json web token
+
+we will use jwt authentication ->json web token
+It is a way to verify the user.
+
+because the user will not constantly give his uname and password.
+We need to keep track and authenticate the user after he logs into the site
+
+using jwt, which is a special typs of token that can be used to authenticate the user
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+there are 3 parts to the token
+
+HEADER:ALGORITHM & TOKEN TYPE
+PAYLOAD:DATA
+VERIFY SIGNATURE
+
+this signature is imp, when we dispatch a signature from our site, we sign it with our secret.
+
+keep a string in the env file and sign our webtoken with that
+
+when we give our user the above long string, the user can  change the payload, but we will verify the user via the signature
+
+basically it facilitates a secure comms between client and the backend
+
+var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
+
+first arg is the data and the next argument is the signature 
+It returns a promise
+
+therefore in our project, after the user is created, we send back a token with its user-id
+this is cause extracting data from db via the id is the fastest
+therefore, we send the id and validate it via the token
+
+___________________________________________________________________________________________________________________________________________________
+
+We get auth token , but we need to be able to decode it, and get the userId from the authtoken
+const payload = {
+    user:{
+        id: user.id
+    }
+  }
+
+  This tells us that user and his id is present inside the auth token, we just need to extract it
+
+So, for what all request of the user that need authentication, we send auth token named header 
+and from that header, we retrieve the user details
+
+If we put the code required to extract the user id from authtoken in the route:3 of auth.js 
+then we need to copy that code every where that we need authentication.
+We cannot scale it well
+
+Therefore we use a middleware
+It is a function that is called whenever required,
+eg here, it is called whenever we need to authenticate anything/request comes to any route that needs login
+
+router.post('/getuser', fetchuser, async (req,res)=>{ ... })
+it is written after the route path and is called before the async req and res code runs 
+
+This middleware (function) is given and ran first and it fetches the user.
+
+const fetchuser = (req, res, next)=>{
+    //  get user from jwt token and add id to req object
+    const token = req.header('auth-token'); // when we send the request, we access the token from the header and we named the header as auth-token,
+  // When we send the request then we send the requestin the name of auth-token
+    if(!token)
+    {
+        // If token is not sent, then we can send status(401) and tell access denied
+        return res.status(401).json({error: "Please authenticate via valid token"})
+    }
+    try {
+        const data = jwt.verify(token, JWT_SECRET);
+        req.user = data.user; //We add a new element to the req object in the form of user 
+        next(); // calls the next function
+    } catch (error) {
+      // If there was any error while authenticating the user, we throw an error
+        return res.status(400).json({error: "Please try again"})
+    }
+    
+}
+It takes req, res and next as arguments and next is called at the end and it calles the next middleware function 
+But in our case it calls the async(req, res) =>{} function.
+
+using this middleware, the async function will get the user details in the req part.
+can access this using req.user
+
+___________________________________________________________________________________________________________________________________________________
+
+For notes
+
+router.get('/fetchallnotes',fetchuser, async (req, res)=>{
+    // we are fetching all the notes of the user from the db with the id similar to user.id
+    // It is an array
+    const notes = await Notes.find({user:req.user.id}); // the fetching is done by mongoose, when we provide the id
+    res.json(notes)
+})
+
+currently the notes of a user is not bound to one user, ie any user can access this data.
+Therefore we need to associate the notes with the user
+
+We add a new field into the Notes model
+user:{
+  // This is similar to a foreign key
+  // we are keeping the userid of a different model here
+  type: mongoose.Schema.Types.ObjectId,
+  ref:'user'
+}
+
+ref is referencing this -
+const User = mongoose.model('user', UserSchema);
+
+using this we can store user also
+___________________________________________________________________________________________________________________________________________________
+
+//ROUTE 3:
+// update note
+// uses PUT "/api/notes/updatenote"
+//logging required
+
+router.put('/updatenote/:id',fetchuser, async (req, res)=>{
+    const {title, description, tag} = req.body;
+
+    // Create a new note object
+    const newNote = {};
+    // if the title is a part of the req
+    if(title) {newNote.title = title};
+    
+    // if the description is a part of the req
+    if(description) {newNote.description = description}
+
+    // if the tag is a part of the req
+    if(tag) {newNote.tag = tag}
+
+    //find the note to be updated
+    //This only accesses the notes of the id given in the path -'/updatenote/:id' this id
+    const note = Note.findById(req.params.id);
+
+    try {
+    
+    } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server error' });
+    }
+})
+
